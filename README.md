@@ -26,11 +26,13 @@ This pipeline was developed for environmental metagenomic studies, where microbi
 
 ## Program Files
 
-After copying the MetaAHCB directory to the working directory (`./`), the core program files should be organized as follows:
+After copying the MetaAHCB directory to the working directory (`./`), the core program files are organized as follows:
 
-./MetaAHCB/pipeline.sh
-./MetaAHCB/scripts/assign_reads_clusters.py
-./MetaAHCB/scripts/bgm_cluster.py
+| File | Description |
+|---|---|
+| `./MetaAHCB/pipeline.sh` | Main pipeline script written in Bash shell |
+| `./MetaAHCB/scripts/assign_reads_clusters.py` | Python script for assigning TGS reads into clusters |
+| `./MetaAHCB/scripts/bgm_cluster.py` | Python script for machine-learning-based clustering of TGS reads |
 
 
 ## Pipeline Steps
