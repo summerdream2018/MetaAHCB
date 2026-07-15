@@ -15,7 +15,7 @@ Jianwei Chen, Mengyang Xu, Ying Sun, and Yanwei Qi
 **Version:** 1.2
 
 
-# Overview
+## Overview
 
 With the rapid development of third-generation sequencing (TGS) technologies, long-read sequencing has greatly improved genome assembly by providing extended read lengths. However, its relatively high sequencing error rate remains a major challenge. In contrast, second-generation sequencing (NGS) provides highly accurate short reads but is limited by short read lengths, which often results in fragmented assemblies. Combining the complementary advantages of short- and long-read sequencing is therefore essential for generating accurate and complete metagenomic assemblies.
 
@@ -28,14 +28,12 @@ This pipeline was developed for environmental metagenomic studies, where microbi
 
 After copying the MetaAHCB directory to the working directory (`./`), the core program files should be organized as follows:
 
-./MetaAHCB/
-├── pipeline.sh
-└── scripts/
-  ├────  assign_reads_clusters.py
-  └────  bgm_cluster.py
+./MetaAHCB/pipeline.sh
+./MetaAHCB/scripts/assign_reads_clusters.py
+./MetaAHCB/scripts/bgm_cluster.py
 
 
-### Pipeline Steps
+## Pipeline Steps
 
 **(1) Long-read preprocessing and initial assembly**
 
@@ -128,7 +126,7 @@ MetaAHCB requires the following software and libraries:
   - numpy
   - scikit-learn (`sklearn`)
 
-### External software
+## External software
 
 - fastp
 - seqkit
