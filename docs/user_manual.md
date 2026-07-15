@@ -119,24 +119,24 @@ Each execution script should be modified independently according to the correspo
 
 For optimal performance, it is recommended that the total amount of second-generation sequencing data in a single group does not exceed 200 GB.
 
-Details:  
+Input data preparation:  
 
 Before execution, modify the input-related parameters in `pipeline.sh`.  
 
 Required input:
 
-Third-generation sequencing reads (TGS)
-At least one sample of TGS reads is required.
-Only .fq.gz format is supported.
-Specify the directory containing TGS reads using:
+- Third-generation sequencing reads (TGS)
+- At least one sample of TGS reads is required.
+- Only .fq.gz format is supported.
+- Specify the directory containing TGS reads using:
 
 `TGS_DIR`  
 
 Second-generation sequencing reads (NGS)
-At least one sample of NGS reads is required.
-Only `.fq.gz` format is supported.
-Paired-end sequencing files (`*_1.fq.gz` and `*_2.fq.gz`) are required.
-Specify the directory containing NGS reads using:
+- At least one sample of NGS reads is required.
+- Only `.fq.gz` format is supported.
+- Paired-end sequencing files (`*_1.fq.gz` and `*_2.fq.gz`) are required.
+- Specify the directory containing NGS reads using:
 
 `NGS_DIR`  
 
@@ -153,9 +153,9 @@ NGS:
 
 Only files following this naming pattern will be automatically recognized by MetaAHCB.
 
-## The example:   
+### The example:   
 
-Step 1. Create input directories  
+### Step 1. Create input directories  
 
 Create separate directories for each sample group:
 
@@ -167,51 +167,42 @@ Create separate directories for each sample group:
 `mkdir ./user1/metaG_project_01/NGS_reads_group02/`  
 `mkdir ./user1/metaG_project_01/NGS_reads_group03/`  
 
-Step 2. Prepare TGS reads
+### Step 2. Prepare TGS reads
 
 For samples with multiple parallel sequencing files, merge the files before running MetaAHCB.
 
 For example, sample01 in group01 contains three parallel TGS sequencing files. Merge and compress them:
 
-`zcat ./cyclone/pathway01/sample01.fq.gz \  
-./cyclone/pathway02/sample01.fq.gz \  
-./cyclone/pathway03/sample01.fq.gz | gzip -1 > \  
-./user1/metaG_project_01/TGS_reads_group01/s01.fq.gz &`  
+`zcat ./cyclone/pathway01/sample01.fq.gz ./cyclone/pathway02/sample01.fq.gz \`  
+`./cyclone/pathway03/sample01.fq.gz | gzip -1 > ./user1/metaG_project_01/TGS_reads_group01/s01.fq.gz &`  
 
 For samples with only one sequencing file, directly copy and rename the file.
 
-`cp ./cyclone/pathway04/sample02.fq.gz \  
-./user1/metaG_project_01/TGS_reads_group02/s02.fq.gz &`  
+`cp ./cyclone/pathway04/sample02.fq.gz ./user1/metaG_project_01/TGS_reads_group02/s02.fq.gz &`  
 
-`cp ./cyclone/pathway05/sample03.fq.gz \  
-./user1/metaG_project_01/TGS_reads_group02/s03.fq.gz &`  
+`cp ./cyclone/pathway05/sample03.fq.gz ./user1/metaG_project_01/TGS_reads_group02/s03.fq.gz &`  
 
 For `group03`, merge or copy TGS reads according to whether each sample contains parallel sequencing files.
 
-Step 3. Prepare NGS reads
+### Step 3. Prepare NGS reads
 
 Copy the paired-end NGS reads into the corresponding group directories.
 
-`cp ./NGS_PE/pathway01/sample01_1.fq.gz \  
-./user1/metaG_project_01/NGS_reads_group01/s01_1.fq.gz &`  
+`cp ./NGS_PE/pathway01/sample01_1.fq.gz ./user1/metaG_project_01/NGS_reads_group01/s01_1.fq.gz &`  
 
-`cp ./NGS_PE/pathway01/sample01_2.fq.gz \  
-./user1/metaG_project_01/NGS_reads_group01/s01_2.fq.gz &`  
+`cp ./NGS_PE/pathway01/sample01_2.fq.gz ./user1/metaG_project_01/NGS_reads_group01/s01_2.fq.gz &`  
 
 Repeat this step for all samples and place the files into the corresponding group directories.
 
-Step 4. Prepare execution scripts
+### Step 4. Prepare execution scripts
 
 Copy the main pipeline script for each sample group:
 
-`cp ./user1/software/MetaAHCB/pipeline.sh \  
-./user1/metaG_project_01/pipeline_group01.sh &`  
+`cp ./user1/software/MetaAHCB/pipeline.sh ./user1/metaG_project_01/pipeline_group01.sh &`  
 
-`cp ./user1/software/MetaAHCB/pipeline.sh \  
-./user1/metaG_project_01/pipeline_group02.sh &`  
+`cp ./user1/software/MetaAHCB/pipeline.sh ./user1/metaG_project_01/pipeline_group02.sh &`  
 
-`cp ./user1/software/MetaAHCB/pipeline.sh \  
-./user1/metaG_project_01/pipeline_group03.sh &`  
+`cp ./user1/software/MetaAHCB/pipeline.sh ./user1/metaG_project_01/pipeline_group03.sh &`  
 
 Modify the following parameters in each script:
 
@@ -227,20 +218,17 @@ Example:
 `NGS_DIR=/user1/metaG_project_01/NGS_reads_group01/`  
 `OUTPUT_DIR=/user1/metaG_project_01/output_group01/`  
 
-Step 5. Submit jobs on a high-memory computing cluster
+### Step 5. Submit jobs on a high-memory computing cluster
 
 Enter the project directory:
 
 `cd ./user1/metaG_project_01/`  
 
-`qsub -clear -cwd -binding linear:16 -P XXX -q st.q \  
--l num_proc=16 -l vf=200G pipeline_group01.sh`  
+`qsub -clear -cwd -binding linear:16 -P XXX -q st.q -l num_proc=16 -l vf=200G pipeline_group01.sh`  
 
-`qsub -clear -cwd -binding linear:16 -P XXX -q st.q \  
--l num_proc=16 -l vf=300G pipeline_group02.sh`  
+`qsub -clear -cwd -binding linear:16 -P XXX -q st.q -l num_proc=16 -l vf=300G pipeline_group02.sh`  
 
-`qsub -clear -cwd -binding linear:16 -P XXX -q st.q \  
--l num_proc=16 -l vf=500G pipeline_group03.sh`  
+`qsub -clear -cwd -binding linear:16 -P XXX -q st.q -l num_proc=16 -l vf=500G pipeline_group03.sh`  
 
 During execution, regularly monitor the job status and check whether intermediate results are correctly generated in the output directory.
 
@@ -301,10 +289,10 @@ OUTPUT_DIR/
 ├── 09_metabat2_bin/  
 ├── 09_metabat2_bin_sc_no_merged/  
 └── 10_dRep_bins/  
-&nbsp;&nbsp;&nbsp;&nbsp;├──── raw_bin/  
-&nbsp;&nbsp;&nbsp;&nbsp;├──── dRep_99/  
-&nbsp;&nbsp;&nbsp;&nbsp;├──── bins_dRep99_checkm2/  
-&nbsp;&nbsp;&nbsp;&nbsp;└──── bins_dRep99_GTDB/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──── raw_bin/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──── dRep_99/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──── bins_dRep99_checkm2/  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──── bins_dRep99_GTDB/  
 
 
 -----------------------------------------------------------------------------------
@@ -343,7 +331,9 @@ Example:
 
 The trailing slash `/` at the end of the path must not be omitted.
 
-(3) Input sequencing files cannot be found
+---
+
+### (3) Input sequencing files cannot be found
 
 Error cause:  
 
@@ -351,16 +341,18 @@ The input directories for TGS or NGS reads are incorrectly specified.
 
 Solution:  
 
-Organize sequencing files of each group into separate directories.
-Ensure that the input directories do not contain unrelated `.fq.gz` files.
-Specify the correct absolute paths in:
+- Organize sequencing files of each group into separate directories.
+- Ensure that the input directories do not contain unrelated `.fq.gz` files.
+- Specify the correct absolute paths in:
 
 `TGS_DIR`  
 `NGS_DIR`  
 
 in `pipeline.sh`.  
 
-(4) Sequencing files are not in the required format
+---
+
+### (4) Sequencing files are not in the required format
 
 MetaAHCB only supports compressed FASTQ files in:
 
@@ -368,24 +360,28 @@ MetaAHCB only supports compressed FASTQ files in:
 
 format.
 
-If the input files are in `.fastq` or `.fq` format, compress them using:
+- If the input files are in `.fastq` or `.fq` format, compress them using:
 
 `gzip -c reads.fastq > reads.fq.gz`  
 
-If the input files are in `.fastq.gz` format, rename them:
+- If the input files are in `.fastq.gz` format, rename them:
 
 `mv reads.fastq.gz reads.fq.gz`  
 
-(5) Excessive KMER value causes high memory usage
+---
+
+### (5) Excessive KMER value causes high memory usage
 
 For large numbers of TGS reads (for example, >10,000 reads), using a KMER value greater than 3 in `pipeline.sh` is not recommended.
 
 A high KMER value may cause:
 
-Extremely high memory consumption during machine-learning clustering
-Exponential increases in computational time
+- Extremely high memory consumption during machine-learning clustering
+- Exponential increases in computational time
 
-(6) Selection of `bgm_cluster_n`  
+---
+
+### (6) Selection of `bgm_cluster_n`  
 
 The parameter:
 
@@ -393,12 +389,14 @@ The parameter:
 
 in `pipeline.sh` defines the expected number of read clusters generated during machine-learning-based clustering.
 
-A value of approximately 20 is recommended based on empirical testing.
+- A value of approximately 20 is recommended based on empirical testing.
 
-A larger value increases the possibility that reads from the same species are separated into different clusters for assembly.
-A larger value may be appropriate when the dataset contains many species with highly divergent genomes.
+- A larger value increases the possibility that reads from the same species are separated into different clusters for assembly.
+- A larger value may be appropriate when the dataset contains many species with highly divergent genomes.
 
-(7) Selection of dedup_ident
+---
+
+### (7) Selection of dedup_ident
 
 The parameter:  
 
@@ -406,34 +404,40 @@ The parameter:
 
 in `pipeline.sh` defines the sequence similarity threshold used by MMseqs2 for contig dereplication.
 
-A value of 99% is recommended.
+- A value of 99% is recommended.
 
-A value higher than 99% may retain redundant contigs.
-A value lower than 99% may remove similar contigs from different species.
+- A value higher than 99% may retain redundant contigs.
+- A value lower than 99% may remove similar contigs from different species.
 
-(8) Software command or environment errors
+---
 
-If MetaAHCB reports that a command or software package cannot be found:
+### (8) Software command or environment errors
 
-Check the software paths specified in lines 56–62 of `pipeline.sh`.
-Verify that all software executable paths are correct.
-For lines containing `source` commands, confirm that:
-The environment path is correct.
-The activated environment contains the required software.
+- If MetaAHCB reports that a command or software package cannot be found:
 
-(9) Monitoring pipeline execution
+- Check the software paths specified in lines 56–62 of `pipeline.sh`.
+- Verify that all software executable paths are correct.
+- For lines containing `source` commands, confirm that:
+- The environment path is correct.
+- The activated environment contains the required software.
+
+---
+
+### (9) Monitoring pipeline execution
 
 When errors occur or disk usage becomes excessive, `pipeline.sh` may continue running and complete the remaining steps despite previous failures.
 
 Therefore, during execution:
 
-Check the output directory regularly.
-Confirm that intermediate results are generated correctly.
-Monitor abnormal file sizes or missing output files.
+- Check the output directory regularly.
+- Confirm that intermediate results are generated correctly.
+- Monitor abnormal file sizes or missing output files.
 
-Daily inspection is recommended to prevent incomplete results caused by failures in individual samples or workflow steps.
+- Daily inspection is recommended to prevent incomplete results caused by failures in individual samples or workflow steps.
 
-(10) Skip downstream bin processing
+---
+
+### (10) Skip downstream bin processing
 
 After the binning process is completed, if no further bin processing or customized downstream analysis is required, the commands after:
 
@@ -443,9 +447,9 @@ in `pipeline.sh` (around line 634) can be commented out.
 
 This will skip:  
 
-Bin dereplication
-CheckM2 quality assessment
-GTDB-Tk taxonomic classification
+- Bin dereplication
+- CheckM2 quality assessment
+- GTDB-Tk taxonomic classification
 
 
 -----------------------------------------------------------------------------------
