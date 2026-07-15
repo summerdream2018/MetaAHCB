@@ -301,10 +301,10 @@ OUTPUT_DIR/
 ├── 09_metabat2_bin/  
 ├── 09_metabat2_bin_sc_no_merged/  
 └── 10_dRep_bins/  
-        ├──── raw_bin/  
-        ├──── dRep_99/  
-        ├──── bins_dRep99_checkm2/  
-        └──── bins_dRep99_GTDB/  
+&nbsp;&nbsp;&nbsp;&nbsp;├──── raw_bin/  
+&nbsp;&nbsp;&nbsp;&nbsp;├──── dRep_99/  
+&nbsp;&nbsp;&nbsp;&nbsp;├──── bins_dRep99_checkm2/  
+&nbsp;&nbsp;&nbsp;&nbsp;└──── bins_dRep99_GTDB/  
 
 
 -----------------------------------------------------------------------------------
