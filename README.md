@@ -41,6 +41,11 @@ After copying the MetaAHCB directory to the working directory (`./`), the core p
 | `./MetaAHCB/scripts/bgm_cluster.py` | Python script for machine-learning-based clustering of TGS reads |
 
 
+## Workflow
+
+The overall workflow of MetaAHCB is shown below:  
+
+![MetaAHCB workflow](MetaAHCB_workflow.pdf)
 
 
 ## Pipeline Steps
