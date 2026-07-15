@@ -7,9 +7,9 @@ MetaAHCB, short for Metagenomic Assembly, Hybrid Correction, and Binning, is a b
 
 ## Project Information
 
-**Institution:** Qingdao Institute of BGI Genomics
-**Main developer:** Jun Xia
-**Contact:** xiajun.kyu@gmail.com
+**Institution:** Qingdao Institute of BGI Genomics  
+**Main developer:** Jun Xia  
+**Contact:** xiajun.kyu@gmail.com  
 
 **Conceptual guidance and technical support:**  
 Jianwei Chen, Mengyang Xu, Ying Sun, and Yanwei Qi  
