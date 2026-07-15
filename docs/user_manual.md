@@ -2,6 +2,7 @@
 
 ## Usage
 
+-----------------------------------------------------------------------------------
 ## 1. Sample Grouping
 
 Before running MetaAHCB, samples should be grouped according to their expected biological similarity. Samples within the same group will be processed together, including cross-sample read mapping and coverage-based binning.
@@ -51,6 +52,7 @@ Based on ecological characteristics, these six samples can be divided into three
 
 Each group will be processed independently and will generate a separate set of MAGs.
 
+-----------------------------------------------------------------------------------
 ## 2. Installation and Initialization
 
 Assume the MetaAHCB installation directory is:
@@ -102,6 +104,7 @@ Modify software paths and environment activation commands after:
 Ensure that all required software paths and conda environments are correctly specified before execution.
 
 
+-----------------------------------------------------------------------------------
 ## 3. Input Preparation and Execution
 
 After grouping samples, place the sequencing data of each group into separate directories. Each group will generate an independent set of MAGs.
@@ -244,7 +247,7 @@ During execution, regularly monitor the job status and check whether intermediat
 Daily inspection is recommended to identify possible errors, abnormal file sizes, or incomplete intermediate results.
 
 
-
+-----------------------------------------------------------------------------------
 ## 4. Output Description
 
 All intermediate and final results will be generated in the directory specified by `OUTPUT_DIR`.
@@ -303,6 +306,8 @@ OUTPUT_DIR/
         ├──── bins_dRep99_checkm2/  
         └──── bins_dRep99_GTDB/  
 
+
+-----------------------------------------------------------------------------------
 ## 5. Troubleshooting and Support
 
 This section describes common errors, possible causes, and recommended solutions during MetaAHCB execution.
