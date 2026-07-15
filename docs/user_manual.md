@@ -102,18 +102,349 @@ Modify software paths and environment activation commands after:
 Ensure that all required software paths and conda environments are correctly specified before execution.
 
 
+## 3. Input Preparation and Execution
+
+After grouping samples, place the sequencing data of each group into separate directories. Each group will generate an independent set of MAGs.
+
+Copy `pipeline.sh` to the project directory and create a separate execution script for each sample group, for example:
+
+`pipeline_group01.sh`
+`pipeline_group02.sh`
+`pipeline_group03.sh`
+
+Each execution script should be modified independently according to the corresponding input data and output directory.
+
+For optimal performance, it is recommended that the total amount of second-generation sequencing data in a single group does not exceed 200 GB.
+
+Details:  
+
+Before execution, modify the input-related parameters in `pipeline.sh`.
+
+Required input:
+
+Third-generation sequencing reads (TGS)
+At least one sample of TGS reads is required.
+Only .fq.gz format is supported.
+Specify the directory containing TGS reads using:
+
+`TGS_DIR`
+
+Second-generation sequencing reads (NGS)
+At least one sample of NGS reads is required.
+Only `.fq.gz` format is supported.
+Paired-end sequencing files (`*_1.fq.gz` and `*_2.fq.gz`) are required.
+Specify the directory containing NGS reads using:
+
+`NGS_DIR`
+
+The TGS and NGS filenames must follow the same sample naming convention.
+
+For example:
+
+TGS:
+`s01.fq.gz`
+
+NGS:
+`s01_1.fq.gz`
+`s01_2.fq.gz`
+
+Only files following this naming pattern will be automatically recognized by MetaAHCB.
+
+## The example: 
+
+Step 1. Create input directories
+
+Create separate directories for each sample group:
+
+`mkdir ./user1/metaG_project_01/TGS_reads_group01/`
+`mkdir ./user1/metaG_project_01/TGS_reads_group02/`
+`mkdir ./user1/metaG_project_01/TGS_reads_group03/`
+
+`mkdir ./user1/metaG_project_01/NGS_reads_group01/`
+`mkdir ./user1/metaG_project_01/NGS_reads_group02/`
+`mkdir ./user1/metaG_project_01/NGS_reads_group03/`
+
+Step 2. Prepare TGS reads
+
+For samples with multiple parallel sequencing files, merge the files before running MetaAHCB.
+
+For example, sample01 in group01 contains three parallel TGS sequencing files. Merge and compress them:
+
+`zcat ./cyclone/pathway01/sample01.fq.gz \
+./cyclone/pathway02/sample01.fq.gz \
+./cyclone/pathway03/sample01.fq.gz | gzip -1 > \
+./user1/metaG_project_01/TGS_reads_group01/s01.fq.gz &`
+
+For samples with only one sequencing file, directly copy and rename the file.
+
+`cp ./cyclone/pathway04/sample02.fq.gz \
+./user1/metaG_project_01/TGS_reads_group02/s02.fq.gz &`
+
+`cp ./cyclone/pathway05/sample03.fq.gz \
+./user1/metaG_project_01/TGS_reads_group02/s03.fq.gz &`
+
+For `group03`, merge or copy TGS reads according to whether each sample contains parallel sequencing files.
+
+Step 3. Prepare NGS reads
+
+Copy the paired-end NGS reads into the corresponding group directories.
+
+`cp ./NGS_PE/pathway01/sample01_1.fq.gz \
+./user1/metaG_project_01/NGS_reads_group01/s01_1.fq.gz &`
+
+`cp ./NGS_PE/pathway01/sample01_2.fq.gz \
+./user1/metaG_project_01/NGS_reads_group01/s01_2.fq.gz &`
+
+Repeat this step for all samples and place the files into the corresponding group directories.
+
+Step 4. Prepare execution scripts
+
+Copy the main pipeline script for each sample group:
+
+`cp ./user1/software/MetaAHCB/pipeline.sh \
+./user1/metaG_project_01/pipeline_group01.sh &`
+
+`cp ./user1/software/MetaAHCB/pipeline.sh \
+./user1/metaG_project_01/pipeline_group02.sh &`
+
+`cp ./user1/software/MetaAHCB/pipeline.sh \
+./user1/metaG_project_01/pipeline_group03.sh &`
+
+Modify the following parameters in each script:
+
+`TGS_DIR`
+`NGS_DIR`
+`OUTPUT_DIR`
+
+Use absolute paths, and ensure that the path ends with `/`.
+
+Example:
+
+`TGS_DIR=/user1/metaG_project_01/TGS_reads_group01/`
+`NGS_DIR=/user1/metaG_project_01/NGS_reads_group01/`
+`OUTPUT_DIR=/user1/metaG_project_01/output_group01/`
+
+Step 5. Submit jobs on a high-memory computing cluster
+
+Enter the project directory:
+
+`cd ./user1/metaG_project_01/`
+
+`qsub -clear -cwd -binding linear:16 -P XXX -q st.q \
+-l num_proc=16 -l vf=200G pipeline_group01.sh`
+
+`qsub -clear -cwd -binding linear:16 -P XXX -q st.q \
+-l num_proc=16 -l vf=300G pipeline_group02.sh`
+
+`qsub -clear -cwd -binding linear:16 -P XXX -q st.q \
+-l num_proc=16 -l vf=500G pipeline_group03.sh`
+
+During execution, regularly monitor the job status and check whether intermediate results are correctly generated in the output directory.
+
+Daily inspection is recommended to identify possible errors, abnormal file sizes, or incomplete intermediate results.
 
 
 
+## 4. Output Description
+
+All intermediate and final results will be generated in the directory specified by `OUTPUT_DIR`.
+
+The output directory contains the following subdirectories:
+
+| Directory | Description |
+|---|---|
+| `00_passed_NGS_reads/` | Quality-controlled second-generation sequencing reads after `fastp` processing |
+| `00_passed_TGS_reads/` | Filtered third-generation sequencing reads with length >1000 bp |
+| `01_gc_nmer/` | Calculated k-mer frequency profiles of TGS reads |
+| `02_bgm_cluster/` | Clustering results of TGS reads based on k-mer frequency profiles |
+| `03_clustered_reads/` | TGS reads separated according to clustering results |
+| `04_metaflye_assembly/` | Assembly results of clustered TGS reads using metaFlye |
+| `05_quickmerge_dedup/` | Merged and dereplicated long-read-based contigs from individual samples |
+| `06_correction/` | Error-corrected long contigs using both TGS and NGS reads |
+| `07_megahit_assembly/` | Assembly results generated from second-generation sequencing reads using MEGAHIT |
+| `08_quickmerge_dedup_lc_sc/` | Final merged assembly combining corrected long contigs and short-read-derived contigs |
+| `08_sc_no_merged/` | Short-read-derived contigs that could not be merged with long contigs |
+| `09_metabat2_bin/` | Mapping results, BAM files, coverage depth information, and MetaBAT2 binning results based on merged contigs (`08_quickmerge_dedup_lc_sc/`) |
+| `09_metabat2_bin_sc_no_merged/` | MetaBAT2 binning results based on unmerged short contigs (`08_sc_no_merged/`) |
+| `10_dRep_bins/` | Final MAG processing results, including bin dereplication, quality assessment, and taxonomy assignment |
+
+The final MAG-related results are stored in:
+
+`10_dRep_bins/`
+
+The subdirectories include:
+
+| Directory                           | Description                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------ |
+| `10_dRep_bins/raw_bin/`             | Raw bins generated from `09_metabat2_bin/` and `09_metabat2_bin_sc_no_merged/` |
+| `10_dRep_bins/dRep_99/`             | Dereplicated MAGs based on 99% average nucleotide identity (ANI)               |
+| `10_dRep_bins/bins_dRep99_checkm2/` | MAG quality assessment results generated by CheckM2                            |
+| `10_dRep_bins/bins_dRep99_GTDB/`    | Taxonomic classification results generated by GTDB-Tk                          |
+
+The directory structure of the final output is summarized below:
+
+OUTPUT_DIR/  
+├── 00_passed_NGS_reads/  
+├── 00_passed_TGS_reads/  
+├── 01_gc_nmer/  
+├── 02_bgm_cluster/  
+├── 03_clustered_reads/  
+├── 04_metaflye_assembly/  
+├── 05_quickmerge_dedup/  
+├── 06_correction/  
+├── 07_megahit_assembly/  
+├── 08_quickmerge_dedup_lc_sc/  
+├── 08_sc_no_merged/  
+├── 09_metabat2_bin/  
+├── 09_metabat2_bin_sc_no_merged/  
+└── 10_dRep_bins/  
+    ├── raw_bin/  
+    ├── dRep_99/  
+    ├── bins_dRep99_checkm2/  
+    └── bins_dRep99_GTDB/  
+
+## 5. Troubleshooting and Support
+
+This section describes common errors, possible causes, and recommended solutions during MetaAHCB execution.
+
+### (1) HERO correction step requires excessive computational resources
+
+The HERO long-read correction step requires a large amount of memory and CPU resources. For large datasets, the program may become extremely slow or remain unfinished for a long time.
+
+Recommended solutions:
+
+- If the second-generation sequencing data of a single sample exceed 40 GB, or
+- If the total second-generation sequencing data within one sample group exceed 100 GB,
+
+the HERO correction step can be disabled by commenting out the corresponding commands in `pipeline.sh`.
+
+Skipping this step can significantly reduce computational time and memory consumption. The HERO correction step is not essential for improving the accuracy of the final long-read-based contigs.
+
+---
+
+### (2) Python scripts cannot be found
+
+**Error cause:**
+
+The `scripts/` directory is not correctly specified.
+
+**Solution:**
+
+Check the `scripts_DIR` parameter in `pipeline.sh` and provide the correct absolute path to the `scripts/` directory.
+
+Example:
+
+`scripts_DIR=/path/to/MetaAHCB/scripts/`
+
+The trailing slash `/` at the end of the path must not be omitted.
+
+(3) Input sequencing files cannot be found
+
+Error cause:
+
+The input directories for TGS or NGS reads are incorrectly specified.
+
+Solution:
+
+Organize sequencing files of each group into separate directories.
+Ensure that the input directories do not contain unrelated `.fq.gz` files.
+Specify the correct absolute paths in:
+
+`TGS_DIR`
+`NGS_DIR`
+
+in `pipeline.sh`.
+
+(4) Sequencing files are not in the required format
+
+MetaAHCB only supports compressed FASTQ files in:
+
+`.fq.gz`
+
+format.
+
+If the input files are in `.fastq` or `.fq` format, compress them using:
+
+`gzip -c reads.fastq > reads.fq.gz`
+
+If the input files are in `.fastq.gz` format, rename them:
+
+`mv reads.fastq.gz reads.fq.gz`
+
+(5) Excessive KMER value causes high memory usage
+
+For large numbers of TGS reads (for example, >10,000 reads), using a KMER value greater than 3 in `pipeline.sh` is not recommended.
+
+A high KMER value may cause:
+
+Extremely high memory consumption during machine-learning clustering
+Exponential increases in computational time
+
+(6) Selection of `bgm_cluster_n`
+
+The parameter:
+
+`bgm_cluster_n`
+
+in `pipeline.sh` defines the expected number of read clusters generated during machine-learning-based clustering.
+
+A value of approximately 20 is recommended based on empirical testing.
+
+A larger value increases the possibility that reads from the same species are separated into different clusters for assembly.
+A larger value may be appropriate when the dataset contains many species with highly divergent genomes.
+
+(7) Selection of dedup_ident
+
+The parameter:
+
+`dedup_ident`
+
+in `pipeline.sh` defines the sequence similarity threshold used by MMseqs2 for contig dereplication.
+
+A value of 99% is recommended.
+
+A value higher than 99% may retain redundant contigs.
+A value lower than 99% may remove similar contigs from different species.
+
+(8) Software command or environment errors
+
+If MetaAHCB reports that a command or software package cannot be found:
+
+Check the software paths specified in lines 56–62 of `pipeline.sh`.
+Verify that all software executable paths are correct.
+For lines containing `source` commands, confirm that:
+The environment path is correct.
+The activated environment contains the required software.
+
+(9) Monitoring pipeline execution
+
+When errors occur or disk usage becomes excessive, `pipeline.sh` may continue running and complete the remaining steps despite previous failures.
+
+Therefore, during execution:
+
+Check the output directory regularly.
+Confirm that intermediate results are generated correctly.
+Monitor abnormal file sizes or missing output files.
+
+Daily inspection is recommended to prevent incomplete results caused by failures in individual samples or workflow steps.
+
+(10) Skip downstream bin processing
+
+After the binning process is completed, if no further bin processing or customized downstream analysis is required, the commands after:
+
+`### Dereplicate bins, checkM2, GTDB`
+
+in `pipeline.sh` (around line 634) can be commented out.
+
+This will skip:
+
+Bin dereplication
+CheckM2 quality assessment
+GTDB-Tk taxonomic classification
 
 
+### Support
 
+For additional questions, bug reports, or suggestions, please contact:
 
-
-
-
-
-
-
-
-
+Email: xiajun.kyu@gmail.com
