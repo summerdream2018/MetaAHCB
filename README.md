@@ -3,6 +3,8 @@ MetaAHCB, short for Metagenomic Assembly, Hybrid Correction, and Binning, is a b
 
 **Metagenomic Assembly, Hybrid Correction, and Binning**
 
+
+
 ## Project Information
 
 **Institution:** Qingdao Institute of BGI Genomics
@@ -15,6 +17,8 @@ Jianwei Chen, Mengyang Xu, Ying Sun, and Yanwei Qi
 **Version:** 1.2
 
 
+
+
 ## Overview
 
 With the rapid development of third-generation sequencing (TGS) technologies, long-read sequencing has greatly improved genome assembly by providing extended read lengths. However, its relatively high sequencing error rate remains a major challenge. In contrast, second-generation sequencing (NGS) provides highly accurate short reads but is limited by short read lengths, which often results in fragmented assemblies. Combining the complementary advantages of short- and long-read sequencing is therefore essential for generating accurate and complete metagenomic assemblies.
@@ -22,6 +26,8 @@ With the rapid development of third-generation sequencing (TGS) technologies, lo
 MetaAHCB integrates hybrid error correction, metagenomic assembly, and contig binning into an automated workflow. By utilizing short reads to improve the accuracy of long reads and leveraging long reads to enhance assembly continuity, MetaAHCB aims to generate longer and more reliable contigs and high-quality MAGs from complex microbial communities.
 
 This pipeline was developed for environmental metagenomic studies, where microbial communities contain diverse and uncultivated microorganisms. By improving genome reconstruction from metagenomic DNA sequences, MetaAHCB facilitates downstream analyses of microbial diversity, evolution, functional potential, and ecological roles.
+
+
 
 
 ## Program Files
@@ -33,6 +39,8 @@ After copying the MetaAHCB directory to the working directory (`./`), the core p
 | `./MetaAHCB/pipeline.sh` | Main pipeline script written in Bash shell |
 | `./MetaAHCB/scripts/assign_reads_clusters.py` | Python script for assigning TGS reads into clusters |
 | `./MetaAHCB/scripts/bgm_cluster.py` | Python script for machine-learning-based clustering of TGS reads |
+
+
 
 
 ## Pipeline Steps
@@ -65,6 +73,8 @@ Bins① and bins② are combined and dereplicated based on 99% average nucleotid
 
 Candidate bins are evaluated using CheckM2 for completeness and contamination estimation and classified using GTDB-Tk. The final outputs include MAGs with different quality levels and discarded bins that do not meet quality requirements.
 
+
+
 ## Functions and Software Dependencies
 
 MetaAHCB integrates the following tools and scripts:
@@ -92,6 +102,8 @@ MetaAHCB integrates the following tools and scripts:
 | Taxonomic classification | GTDB-Tk |
 
 
+
+
 ## Performance
 
 The computational performance of MetaAHCB depends on the sequencing depth, number of samples, and available computing resources. Representative benchmark tests are shown below.
@@ -111,6 +123,8 @@ Two groups, each containing five metagenomic samples, were processed. Each sampl
 (Performance optimization and customization of individual workflow steps are not described in detail here.)
 
 
+
+
 ## Software Requirements
 
 MetaAHCB requires the following software and libraries:
@@ -127,6 +141,8 @@ MetaAHCB requires the following software and libraries:
   - os
   - numpy
   - scikit-learn (`sklearn`)
+
+
 
 ## External software
 
