@@ -298,10 +298,10 @@ OUTPUT_DIR/
 ├── 09_metabat2_bin/  
 ├── 09_metabat2_bin_sc_no_merged/  
 └── 10_dRep_bins/  
-    ├── raw_bin/  
-    ├── dRep_99/  
-    ├── bins_dRep99_checkm2/  
-    └── bins_dRep99_GTDB/  
+        ├──── raw_bin/  
+        ├──── dRep_99/  
+        ├──── bins_dRep99_checkm2/  
+        └──── bins_dRep99_GTDB/  
 
 ## 5. Troubleshooting and Support
 
@@ -443,6 +443,7 @@ CheckM2 quality assessment
 GTDB-Tk taxonomic classification
 
 
+-----------------------------------------------------------------------------------
 ### Support
 
 For additional questions, bug reports, or suggestions, please contact:
